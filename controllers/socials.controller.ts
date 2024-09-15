@@ -20,4 +20,16 @@ const getDefaults = async (req: Request, res: Response) => {
   }
 }
 
-export  {createSocial, getDefaults}; 
+const getSocial = async (req: Request, res: Response) => {
+  console.log("SOCIAL ID IS ", req.params.id);
+  try {
+    const social = await Socials.findById(req.params.id);
+    if (social) {
+      res.status(200).json(social);
+    }
+  } catch (error: any) {
+    res.status(404).json({ message: "Social not found" });
+  }
+}
+
+export  {createSocial, getDefaults,getSocial}; 

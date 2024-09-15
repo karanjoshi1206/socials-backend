@@ -18,6 +18,6 @@ const SocialSchema = new mongoose.Schema(
   { collection: "socials" }
 );
 
-const Socials = mongoose.model("socialz", SocialSchema);
+const Socials = mongoose.model("Social", SocialSchema);
 
 export default Socials;
