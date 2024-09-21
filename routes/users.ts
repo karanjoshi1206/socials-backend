@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { addHandle, deleteUserHandle, getUser, getUserHandles, getUserHandlesById, updateUserHandle } from "../controllers/users.controller.js";
+import { addHandle, deleteUserHandle, getUser, getUserHandles, getUserHandlesById, updateUser, updateUserHandle } from "../controllers/users.controller.js";
 
 const userRouter = express.Router();
 
@@ -9,6 +9,10 @@ userRouter.get("/:email", (req: Request, res: Response) => {
 
 userRouter.post("/addHandle", (req: Request, res: Response) => {
   addHandle(req, res);
+});
+
+userRouter.put("/", (req: Request, res: Response) => {
+  updateUser(req, res);
 });
 
 userRouter.get("/handles/:email", (req: Request, res: Response) => {

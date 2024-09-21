@@ -14,6 +14,23 @@ const getUser = async (req: Request, res: Response) => {
   }
 };
 
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { email, name, userName } = req.body;
+
+    const updatedUser = await Users.findOneAndUpdate({ email: email }, { $set: { name: name, userName: userName } }, { new: true });
+
+    res.status(200).json({ message: "User updated successfully", data: updatedUser });
+  } catch (error: any) {
+    console.log("error is ", error?.codeName);
+    if (error.codeName === "DuplicateKey") {
+      return res.status(400).json({ message: "Username already exists" });
+    }
+
+    res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
 const addHandle = async (req: Request, res: Response) => {
   try {
     const { userId, socialPlatformId, handle } = req.body;
@@ -24,6 +41,12 @@ const addHandle = async (req: Request, res: Response) => {
 
     if (!user || !socialPlatform) {
       return res.status(404).json({ message: "User or Social Platform not found" });
+    }
+
+    // check for duplicate social handle
+    const existingHandle = user.socialHandles.find((sh) => sh.platform?._id.toString() === socialPlatformId);
+    if (existingHandle) {
+      return res.status(400).json({ message: "Social handle already exists" });
     }
 
     // Add the social handle to the user's socialHandles array
@@ -120,4 +143,4 @@ const deleteUserHandle = async (req: Request, res: Response) => {
   }
 };
 
-export { getUser, addHandle, getUserHandles, updateUserHandle, deleteUserHandle,getUserHandlesById };
+export { getUser, addHandle, getUserHandles, updateUserHandle, deleteUserHandle, getUserHandlesById, updateUser };
