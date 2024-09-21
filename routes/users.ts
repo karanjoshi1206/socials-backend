@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { addHandle, getUser, getUserHandles } from "../controllers/users.controller.js";
+import { addHandle, deleteUserHandle, getUser, getUserHandles, getUserHandlesById, updateUserHandle } from "../controllers/users.controller.js";
 
 const userRouter = express.Router();
 
@@ -13,6 +13,19 @@ userRouter.post("/addHandle", (req: Request, res: Response) => {
 
 userRouter.get("/handles/:email", (req: Request, res: Response) => {
   getUserHandles(req, res);
+});
+
+userRouter.get("/handles/byId/:id", (req: Request, res: Response) => {
+  getUserHandlesById(req, res);
+});
+
+userRouter.put("/handles", (req: Request, res: Response) => {
+  updateUserHandle(req, res);
+});
+
+userRouter.delete("/handles", (req: Request, res: Response) => {
+  // Delete handle
+  deleteUserHandle(req, res);
 });
 
 export default userRouter;

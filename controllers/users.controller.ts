@@ -48,7 +48,22 @@ const getUserHandles = async (req: Request, res: Response) => {
       res.status(200).json({
         username: user.userName,
         name: user.name,
-        handles:user.socialHandles
+        handles: user.socialHandles
+      });
+    }
+  } catch (error: any) {
+    console.log("error is ", error);
+    res.status(404).json({ message: "User not found" });
+  }
+};
+const getUserHandlesById = async (req: Request, res: Response) => {
+  try {
+    const user = await Users.findById(req.params.id).populate("socialHandles.platform");
+    if (user) {
+      res.status(200).json({
+        username: user.userName,
+        name: user.name,
+        handles: user.socialHandles
       });
     }
   } catch (error: any) {
@@ -57,4 +72,52 @@ const getUserHandles = async (req: Request, res: Response) => {
   }
 };
 
-export { getUser, addHandle, getUserHandles };
+const updateUserHandle = async (req: Request, res: Response) => {
+  try {
+    const { email, platformId, handle } = req.body;
+
+    const user = await Users.findOne({ email }).populate("socialHandles.platform");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const updatedUser = await Users.findOneAndUpdate(
+      {
+        email: email,
+        "socialHandles._id": platformId
+      },
+      {
+        $set: {
+          "socialHandles.$.handle": handle
+        }
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ message: "Social handle updated successfully", data: updatedUser });
+  } catch (error) {
+    console.log("error is ", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+const deleteUserHandle = async (req: Request, res: Response) => {
+  try {
+    const { email, platformId } = req.body;
+
+    const user = await Users.findOne({ email }).populate("socialHandles.platform");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const updated = await Users.findOneAndUpdate({ email }, { $pull: { socialHandles: { _id: platformId } } }, { new: true });
+
+    res.status(200).json({ message: "Social handle deleted successfully", data: updated });
+  } catch (error) {
+    console.log("error is ", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export { getUser, addHandle, getUserHandles, updateUserHandle, deleteUserHandle,getUserHandlesById };
